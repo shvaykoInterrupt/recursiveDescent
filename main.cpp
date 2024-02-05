@@ -357,7 +357,7 @@ ASTNode* term()
 	{
 		NodeType operatorType = arithop();
 		nextToken();
-		ASTNode *right = term();
+		ASTNode *right = factor();
 		left = makeASTNode(left, right, operatorType, 0);
 	}
 	return left;
