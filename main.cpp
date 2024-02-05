@@ -119,9 +119,9 @@ ASTNode* makeASTLeaf(NodeType type, int value)
 	return makeASTNode(0, 0,type,value);
 }
 
-ASTNode* makeASTUnary(ASTNode *left, NodeType type, int value)
+ASTNode* makeASTUnary(ASTNode *right, NodeType type, int value)
 {
-	return makeASTNode(left, 0, type, value);
+	return makeASTNode(0, right, type, value);
 }
 
 NodeType arithop()
@@ -304,6 +304,8 @@ void consume(TokenType type,const char *message)
 
 ASTNode* expression();
 
+
+
 ASTNode* primary()
 {
 	if (checkToken(TOKEN_INT))
@@ -321,15 +323,28 @@ ASTNode* primary()
 	}
 }
 
+ASTNode* unary()
+{
+	if (checkToken(TOKEN_MINUS))
+	{
+		NodeType operatorType = arithop();
+		nextToken();
+		ASTNode* right = unary();
+		return makeASTUnary(right, operatorType, 0);
+	}
+
+	return primary();
+}
+
 ASTNode* factor()
 {
-	ASTNode* left = primary();
+	ASTNode* left = unary();
 
 	while (checkToken(TOKEN_STAR) || checkToken(TOKEN_SLASH))
 	{
 		NodeType operatorType = arithop();
 		nextToken();
-		ASTNode* right = factor();
+		ASTNode* right = unary();
 		left = makeASTNode(left, right, operatorType, 0);
 	}
 	return left;
